@@ -1,7 +1,9 @@
 # CSE110 SP21 Lab 5
 
 ## Author(s):
-- YOUR NAME
+Ryan Shamoon
+Asya Balas
+Brian Tran
 
 ## Part 1:
 
