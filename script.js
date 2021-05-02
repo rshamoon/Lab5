@@ -10,12 +10,19 @@ const imageInput = document.getElementById('image-input');
 const clear = document.querySelector("[type='reset']");
 const read = document.querySelector("[type='button']");
 const submit = document.querySelector("[type='submit']");
-const voices = document.getElementById("voice-selection");
+const voices = document.getElementById("voice-selection"); 
 
 const submitBtn = document.getElementById('generate-meme');
 
+const volumeSlider = document.querySelector("[type='range']");
+const volumeGroup = document.getElementById("volume-group");
+const volumePic = document.querySelector('#volume-group img');
+
 const textTop = document.getElementById('text-top');
 const textBottom = document.getElementById('text-bottom');
+
+//gets rid of filler default value
+voices.remove(0);
 
 // Fires whenever the img object loads a new image (such as with img.src =)
 img.addEventListener('load', () => {
@@ -107,12 +114,15 @@ read.addEventListener('click', event => {
 
   let synth = window.speechSynthesis;
 
+  //gets things to say
   let topUtterance = new SpeechSynthesisUtterance(textTop.value);
   let bottomUtterance = new SpeechSynthesisUtterance(textBottom.value);
   let availableVoices = synth.getVoices();
 
+  //sets the selected data
   let selectedOption = voices.selectedOptions[0].getAttribute('data-name');
 
+  //attaches audio to thing to say
   for(let i = 0; i < availableVoices.length ; i++) {
     if(availableVoices[i].name === selectedOption) {
       topUtterance.voice = availableVoices[i];
@@ -120,12 +130,13 @@ read.addEventListener('click', event => {
     }
   }
 
-  topUtterance.pitch = pitch.value;
-  topUtterance.rate = rate.value;
+  //sets volume
+  topUtterance.volume = (volumeSlider.value/100);
+  bottomUtterance.volume = (volumeSlider.value/100);
 
-  bottomUtterance.pitch = pitch.value;
-  bottomUtterance.rate = rate.value;
-
+  window.speechSynthesis.cancel();
+  
+  //says it
   synth.speak(topUtterance);
   synth.speak(bottomUtterance);
 });
@@ -135,8 +146,9 @@ function populateVoices(){
   let synth = window.speechSynthesis;
   let availableVoices = synth.getVoices();
 
+  //fill available voices
   for(let i = 0; i < availableVoices.length ; i++) {
-    let option = document.createElement('option');
+    let option = document.createElement('option'); 
     option.textContent = availableVoices[i].name + ' (' + availableVoices[i].lang + ')';
 
     if(availableVoices[i].default) {
@@ -149,6 +161,27 @@ function populateVoices(){
   }
 }
 
+volumeGroup.addEventListener('input', event => {
+  event.preventDefault();
+  
+  if((volumeSlider.value/100) >= .67){
+    volumePic.src = 'icons/volume-level-3.svg';
+    volumePic.alt = 'Volume Level 3';
+  }
+  else if((volumeSlider.value/100) >= .34){
+    volumePic.src = 'icons/volume-level-2.svg';
+    volumePic.alt = 'Volume Level 2';
+  }
+  else if((volumeSlider.value/100) >= .01){
+    volumePic.src = 'icons/volume-level-1.svg'; 
+    volumePic.alt = 'Volume Level 1';
+  }
+  else{
+    volumePic.src = 'icons/volume-level-0.svg';
+    volumePic.alt = 'Volume Level 0';
+  }
+  
+  });
 
   
 /**
