@@ -7,7 +7,7 @@ Brian Tran
 
 ## Part 1:
 
-LINK TO YOUR PUBLISHED SITE
+Pubished Site: https://rshamoon.github.io/Lab5/
 
 ## Part 2:
 
