@@ -10,12 +10,12 @@ const imageInput = document.getElementById('image-input');
 const clear = document.querySelector("[type='reset']");
 const read = document.querySelector("[type='button']");
 const submit = document.querySelector("[type='submit']");
+const voices = document.getElementById("voice-selection");
 
 const submitBtn = document.getElementById('generate-meme');
 
 const textTop = document.getElementById('text-top');
 const textBottom = document.getElementById('text-bottom');
-
 
 // Fires whenever the img object loads a new image (such as with img.src =)
 img.addEventListener('load', () => {
@@ -80,7 +80,13 @@ submitBtn.addEventListener('submit', event => {
   submit.disabled = true;
   clear.disabled = false;
   read.disabled = false;
-  
+  voices.disabled = false;
+
+  //populate voice options
+  populateVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populateVoices;
+  }
 });
 
 clear.addEventListener('click', event => {
@@ -92,8 +98,57 @@ clear.addEventListener('click', event => {
   submit.disabled = false;
   clear.disabled = true;
   read.disabled = true;
+  voices.disabled = true;
   
 });
+
+read.addEventListener('click', event => {
+  event.preventDefault();
+
+  let synth = window.speechSynthesis;
+
+  let topUtterance = new SpeechSynthesisUtterance(textTop.value);
+  let bottomUtterance = new SpeechSynthesisUtterance(textBottom.value);
+  let availableVoices = synth.getVoices();
+
+  let selectedOption = voices.selectedOptions[0].getAttribute('data-name');
+
+  for(let i = 0; i < availableVoices.length ; i++) {
+    if(availableVoices[i].name === selectedOption) {
+      topUtterance.voice = availableVoices[i];
+      bottomUtterance.voice = availableVoices[i];
+    }
+  }
+
+  topUtterance.pitch = pitch.value;
+  topUtterance.rate = rate.value;
+
+  bottomUtterance.pitch = pitch.value;
+  bottomUtterance.rate = rate.value;
+
+  synth.speak(topUtterance);
+  synth.speak(bottomUtterance);
+});
+
+function populateVoices(){
+  
+  let synth = window.speechSynthesis;
+  let availableVoices = synth.getVoices();
+
+  for(let i = 0; i < availableVoices.length ; i++) {
+    let option = document.createElement('option');
+    option.textContent = availableVoices[i].name + ' (' + availableVoices[i].lang + ')';
+
+    if(availableVoices[i].default) {
+      option.textContent += ' -- DEFAULT';
+    }
+
+    option.setAttribute('data-lang', availableVoices[i].lang);
+    option.setAttribute('data-name', availableVoices[i].name);
+    voices.appendChild(option);
+  }
+}
+
 
   
 /**
